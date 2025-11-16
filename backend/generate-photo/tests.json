@@ -1,0 +1,37 @@
+{
+  "tests": [
+    {
+      "name": "Generate photo from greeting message",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": "Привет!"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "photoUrl": "string",
+        "prompt": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Generate photo from flirty message",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": "Покажи фото"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "photoUrl": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Handle OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}
