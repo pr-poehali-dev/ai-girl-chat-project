@@ -39,9 +39,9 @@ const Index = () => {
   ];
 
   const samplePhotos = [
-    { id: 1, url: '/placeholder.svg', locked: false },
-    { id: 2, url: '/placeholder.svg', locked: false },
-    { id: 3, url: '/placeholder.svg', locked: false },
+    { id: 1, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/9a3bfe95-aec6-4320-8291-82521fbc6294.jpg', locked: false },
+    { id: 2, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/617e4430-fab0-4088-918c-b37d28991cbd.jpg', locked: false },
+    { id: 3, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/d7d41e02-a535-4817-9496-1563423d49c1.jpg', locked: false },
     { id: 4, url: '/placeholder.svg', locked: true },
     { id: 5, url: '/placeholder.svg', locked: true },
     { id: 6, url: '/placeholder.svg', locked: true },
