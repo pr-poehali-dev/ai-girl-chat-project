@@ -15,13 +15,6 @@ interface Message {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  photoUrl?: string;
-}
-
-interface Photo {
-  id: number;
-  url: string;
-  locked: boolean;
 }
 
 const Index = () => {
@@ -31,17 +24,10 @@ const Index = () => {
       id: 1,
       text: 'Привет! Я здесь, чтобы поболтать с тобой 💜',
       sender: 'ai',
-      timestamp: new Date(),
-      photoUrl: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/9a3bfe95-aec6-4320-8291-82521fbc6294.jpg'
+      timestamp: new Date()
     }
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [photos, setPhotos] = useState<Photo[]>([
-    { id: 1, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/9a3bfe95-aec6-4320-8291-82521fbc6294.jpg', locked: false },
-    { id: 2, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/617e4430-fab0-4088-918c-b37d28991cbd.jpg', locked: false },
-    { id: 3, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/d7d41e02-a535-4817-9496-1563423d49c1.jpg', locked: false },
-  ]);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const aiResponses = [
     'Мне нравится общаться с тобой 😊',
@@ -52,47 +38,17 @@ const Index = () => {
     'Давай поговорим о чём-нибудь приятном',
   ];
 
-  const generatePhotoFromMessage = async (message: string): Promise<string | null> => {
-    try {
-      const response = await fetch('https://ai.poehali.dev/generate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: getPromptFromMessage(message) })
-      });
-      
-      if (!response.ok) return null;
-      const data = await response.json();
-      return data.url;
-    } catch (error) {
-      console.error('Photo generation failed:', error);
-      return null;
-    }
-  };
+  const samplePhotos = [
+    { id: 1, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/9a3bfe95-aec6-4320-8291-82521fbc6294.jpg', locked: false },
+    { id: 2, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/617e4430-fab0-4088-918c-b37d28991cbd.jpg', locked: false },
+    { id: 3, url: 'https://cdn.poehali.dev/projects/180e6d25-8340-4616-9cf2-0d84ffc47e37/files/d7d41e02-a535-4817-9496-1563423d49c1.jpg', locked: false },
+    { id: 4, url: '/placeholder.svg', locked: true },
+    { id: 5, url: '/placeholder.svg', locked: true },
+    { id: 6, url: '/placeholder.svg', locked: true },
+  ];
 
-  const getPromptFromMessage = (message: string): string => {
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('привет') || lowerMessage.includes('здравствуй')) {
-      return 'beautiful young woman smiling warmly, friendly expression, portrait photography, soft lighting, welcoming pose';
-    }
-    if (lowerMessage.includes('фото') || lowerMessage.includes('покаж')) {
-      return 'attractive young woman posing for camera, confident expression, fashionable outfit, professional photography, modern setting';
-    }
-    if (lowerMessage.includes('сексуальн') || lowerMessage.includes('красив') || lowerMessage.includes('горяч')) {
-      return 'beautiful woman in elegant dress, alluring pose, sophisticated styling, intimate atmosphere, artistic photography, tasteful composition';
-    }
-    if (lowerMessage.includes('откровен') || lowerMessage.includes('интим') || lowerMessage.includes('страст')) {
-      return 'attractive woman in romantic setting, sensual pose, soft intimate lighting, elegant lingerie, artistic boudoir photography, tasteful and aesthetic';
-    }
-    if (lowerMessage.includes('улыбн') || lowerMessage.includes('весел')) {
-      return 'attractive young woman with bright genuine smile, happy expression, joyful mood, natural beauty, warm lighting';
-    }
-    
-    return 'beautiful young woman portrait, natural expression, soft lighting, professional photography, attractive appearance, modern aesthetic';
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isGenerating) return;
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
 
     const userMessage: Message = {
       id: messages.length + 1,
@@ -101,33 +57,17 @@ const Index = () => {
       timestamp: new Date()
     };
 
-    const currentInput = inputValue;
     setMessages([...messages, userMessage]);
     setInputValue('');
-    setIsGenerating(true);
 
-    setTimeout(async () => {
-      const photoUrl = await generatePhotoFromMessage(currentInput);
-      
+    setTimeout(() => {
       const aiMessage: Message = {
         id: messages.length + 2,
         text: aiResponses[Math.floor(Math.random() * aiResponses.length)],
         sender: 'ai',
-        timestamp: new Date(),
-        photoUrl: photoUrl || undefined
+        timestamp: new Date()
       };
-      
       setMessages(prev => [...prev, aiMessage]);
-      
-      if (photoUrl) {
-        setPhotos(prev => [...prev, { 
-          id: prev.length + 1, 
-          url: photoUrl, 
-          locked: false 
-        }]);
-      }
-      
-      setIsGenerating(false);
     }, 1000);
   };
 
@@ -239,46 +179,23 @@ const Index = () => {
                       key={message.id}
                       className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}
                     >
-                      <div className={`max-w-[70%] space-y-2 ${message.sender === 'ai' ? 'flex flex-col' : ''}`}>
-                        {message.photoUrl && message.sender === 'ai' && (
-                          <div className="rounded-2xl overflow-hidden">
-                            <img 
-                              src={message.photoUrl} 
-                              alt="Generated" 
-                              className="w-full max-w-xs object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={() => setActiveSection('gallery')}
-                            />
-                          </div>
-                        )}
-                        <div
-                          className={`rounded-2xl px-4 py-2 ${
-                            message.sender === 'user'
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-foreground'
-                          }`}
-                        >
-                          <p>{message.text}</p>
-                          <p className="text-xs opacity-70 mt-1">
-                            {message.timestamp.toLocaleTimeString('ru-RU', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </div>
+                      <div
+                        className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                          message.sender === 'user'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground'
+                        }`}
+                      >
+                        <p>{message.text}</p>
+                        <p className="text-xs opacity-70 mt-1">
+                          {message.timestamp.toLocaleTimeString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
                       </div>
                     </div>
                   ))}
-                  {isGenerating && (
-                    <div className="flex justify-start animate-slide-up">
-                      <div className="bg-muted text-foreground rounded-2xl px-4 py-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-100" />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-200" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </ScrollArea>
 
@@ -310,7 +227,7 @@ const Index = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {photos.map((photo) => (
+              {samplePhotos.map((photo) => (
                 <Card
                   key={photo.id}
                   className="aspect-square overflow-hidden relative group cursor-pointer hover:shadow-xl transition-shadow"
@@ -318,8 +235,16 @@ const Index = () => {
                   <img
                     src={photo.url}
                     alt={`Photo ${photo.id}`}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover ${photo.locked ? 'blur-lg' : ''}`}
                   />
+                  {photo.locked && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <div className="text-center space-y-2">
+                        <Icon name="Lock" size={32} className="text-white mx-auto" />
+                        <p className="text-white text-sm">Заблокировано</p>
+                      </div>
+                    </div>
+                  )}
                 </Card>
               ))}
             </div>
